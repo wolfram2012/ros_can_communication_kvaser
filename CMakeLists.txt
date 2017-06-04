@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(ros-can-communication-kvaser)
+project(ros_can_communication_kvaser)
 
 ## Add support for C++11, supported in ROS Kinetic and newer
 # add_definitions(-std=c++11)
@@ -9,6 +9,9 @@ project(ros-can-communication-kvaser)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   roscpp
+  rospy
+  std_msgs
+  message_generation
 )
 
 ## System dependencies are found with CMake's conventions
@@ -45,11 +48,13 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
+ add_message_files(
+   FILES
+   CanMessage.msg
+   CanMessageStamped.msg
 #   Message1.msg
 #   Message2.msg
-# )
+ )
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -66,10 +71,10 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs  # Or other packages containing msgs
-# )
+ generate_messages(
+   DEPENDENCIES
+   std_msgs  # Or other packages containing msgs
+ )
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -114,9 +119,9 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 # include_directories(include)
-include_directories(
-  ${catkin_INCLUDE_DIRS}
-)
+#include_directories(
+#  ${catkin_INCLUDE_DIRS}
+#)
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
@@ -195,3 +200,15 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+
+include_directories(include ${catkin_INCLUDE_DIRS})
+link_directories(${catkin_LIB_DIRS} lib)
+
+add_executable(can2ros src/can2ros.cpp)
+target_link_libraries(can2ros ${catkin_LIBRARIES} lib)
+
+add_executable(ros2can src/ros2can.cpp)
+target_link_libraries(ros2can ${catkin_LIBRARIES} data2msg)
+
+
